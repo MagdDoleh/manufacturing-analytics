@@ -6,6 +6,41 @@ A data-driven manufacturing analytics project using PostgreSQL, Python, Power BI
 
 Currently under development.
 
+## Automated ETL Pipeline
+
+The project's complete synthetic-data workflow can be reproduced with one
+command:
+
+```bash
+python scripts/run_pipeline.py
+```
+
+The command generates jobs → generates operations → generates downtime →
+validates and loads the datasets into PostgreSQL → verifies the final database
+counts. It is a reproducible automated ETL workflow for this project, not an
+enterprise production orchestration system.
+
+## Root-Cause Analysis
+
+Phase 8 investigated 1,137 late jobs among 30,000 records in the project's
+synthetic manufacturing dataset. Product late rates were similar, while late jobs
+had substantially higher processing times and quantities than On-Time jobs.
+
+| Quantity range | Avg. processing per operation | Late rate |
+| --- | ---: | ---: |
+| 1-100 | 39.03 minutes | 0.00% |
+| 101-200 | 78.13 minutes | 0.00% |
+| 201-300 | 130.57 minutes | 0.00% |
+| 301-400 | 182.94 minutes | 2.00% |
+| 401-500 | 234.94 minutes | 15.36% |
+
+The strongest finding is a workload/deadline mismatch: processing time increases
+sharply with batch quantity, but deadline allowance remains approximately 72
+hours across all quantity ranges. This relationship is strongly associated with
+lateness—1,004 of the 1,137 late jobs are in the 401-500 range. These findings
+come from synthetic data and do not establish real-world causation. A corrective
+action has not yet been tested.
+
 ## Simulation Experiments
 
 The first experiment modeled 100 jobs moving through five work centers in a
